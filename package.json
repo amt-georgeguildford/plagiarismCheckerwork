@@ -1,0 +1,41 @@
+{
+  "name": "George",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev --transpile-only --ignore-watch node-modules --respawn src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc -p .",
+    "prisma": "npx prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.13.0",
+    "bcrypt": "^5.1.0",
+    "config": "^3.3.9",
+    "cookie-parser": "^1.4.6",
+    "deep-email-validator": "^0.1.21",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "generate-password": "^1.7.0",
+    "jsonwebtoken": "^9.0.0",
+    "nodemailer": "^6.9.1",
+    "prisma": "^4.13.0",
+    "ts-node": "^10.9.1",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/config": "^3.3.0",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.17",
+    "@types/express-validator": "^3.0.0",
+    "@types/generate-password": "^1.5.1",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/nodemailer": "^6.4.7",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4"
+  }
+}
