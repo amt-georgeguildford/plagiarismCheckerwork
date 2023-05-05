@@ -14,7 +14,9 @@ app.use(cookieParser())
 app.use('/auth', authRouter)
 app.use('/api/v1/admin', apiAdminRouter)
 app.use('/api/v1/staff', apiStaffRouter)
-
+app.get('/', (req: Request,res:Response)=>{
+  res.send('fsffsnjfs')
+})
 app.get("/admin", saveAdminData)
 app.listen(5000, () => {
   console.log("Server is running on PORT: 5000");
