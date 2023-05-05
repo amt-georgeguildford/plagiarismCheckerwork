@@ -15,9 +15,9 @@ app.use('/auth', authRouter)
 app.use('/api/v1/admin', apiAdminRouter)
 app.use('/api/v1/staff', apiStaffRouter)
 app.get('/', (req: Request,res:Response)=>{
-  res.send('fsffsnjfs')
+  res.send('live')
 })
 app.get("/admin", saveAdminData)
-app.listen(5000, () => {
+app.listen(5000, '0.0.0.0',() => {
   console.log("Server is running on PORT: 5000");
 });
