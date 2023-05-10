@@ -5,15 +5,32 @@ import {
   login,
   logout,
   mailSessionverification,
-  claimAccount,
+  verifyResetSession,
+  resetPassword,
+  sessionEnd,
+  resetEmailRequest,
+  checkLogin,
+  saveResetRequest,
+  passwordReset,
 } from "../controllers/auth";
 import {
   generateAccessToken,
   generateRefreshToken,
 } from "../middlewares/tokenGenerator";
-import { mailValidationToken } from "../middlewares/tokenValidation";
-import hashPassword from "../middlewares/hashPassword";
-import { loginBodyError, loginBodyValidator } from "../middlewares/loginValidation";
+import {
+  accessTokenValidation,
+  refreshTokenValidation,
+  requestHeaderValidation,
+} from "../middlewares/tokenValidation";
+import {
+  emailValidation,
+  loginBodyError,
+  loginBodyValidator,
+  resetBodyError,
+  resetPasswordValidation,
+} from "../middlewares/loginValidation";
+import { hashResetPassword } from "../middlewares/hashPassword";
+import { noAccountFound, searchAccount } from "../middlewares/searchAccount";
 
 const authRouter = express.Router();
 
@@ -28,15 +45,53 @@ authRouter.post(
   login
 );
 
-authRouter.get("/account/:id", mailValidationToken, mailSessionverification);
+authRouter.get(
+  "/verify/session",
+  requestHeaderValidation,
+  accessTokenValidation,
+  sessionEnd,
+  verifyResetSession,
+  mailSessionverification
+);
 
 authRouter.post(
-  "/account/claim/:id",
-  mailValidationToken,
-  hashPassword,
-  generateAccessToken,
-  generateRefreshToken,
-  claimAccount
+  "/account/reset",
+  resetPasswordValidation,
+  resetBodyError,
+  requestHeaderValidation,
+  accessTokenValidation,
+  sessionEnd,
+  verifyResetSession,
+  hashResetPassword,
+  passwordReset
 );
-authRouter.post("/logout", logout);
+
+authRouter.post(
+  "/reset/password/",
+  emailValidation,
+  loginBodyError,
+  searchAccount,
+  noAccountFound,
+  generateAccessToken,
+  saveResetRequest,
+  resetEmailRequest
+);
+
+authRouter.get(
+  "/verify/user",
+  requestHeaderValidation,
+  accessTokenValidation,
+  refreshTokenValidation,
+  checkLogin
+);
+
+authRouter.post(
+  "/logout",
+  requestHeaderValidation,
+  accessTokenValidation,
+  refreshTokenValidation,
+  logout
+);
+
+
 export default authRouter;

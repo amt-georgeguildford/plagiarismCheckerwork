@@ -1,5 +1,5 @@
 interface AccountVerificationFormat{
-    token:string, 
+    token?:string, 
     account: Account
 }
 
@@ -10,4 +10,26 @@ interface Account{
     email?: string
 }
 
-export default AccountVerificationFormat
+enum Role{
+    ADMIN= 'ADMIN',
+    LECTURER= 'LECTURER',
+    STUDENT= 'STUDENT'
+}
+
+interface CsvDataType {
+    firstname: string, 
+    lastname: string, 
+    email: string,
+    phone_number: string,
+    departmentid?: string,
+    qualification?: string,
+}
+
+interface MailOptions {
+    from: string,
+    to: string,
+    subject: string,
+    html: string
+}
+
+export  {AccountVerificationFormat, Role, CsvDataType, MailOptions}

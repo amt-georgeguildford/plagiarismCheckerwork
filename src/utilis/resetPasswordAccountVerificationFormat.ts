@@ -1,6 +1,8 @@
 import envConfig from "../config/envConfig"
-import {AccountVerificationFormat} from "./types"
-const accountVerificationFormat= ({account}: AccountVerificationFormat)=>{
+import { AccountVerificationFormat } from "./types"
+
+
+const resetPasswordEmailFormat= ({token, account}: AccountVerificationFormat)=>{
     return {
         from: `Admin <${envConfig.email}>`,
         to: `${account.firstname} <${account.email}>`,
@@ -27,13 +29,11 @@ const accountVerificationFormat= ({account}: AccountVerificationFormat)=>{
                  color: #252525;">
                 <div>
                     <p style="color: #000000;">Dear ${account.firstname},</p>
-                    <p style="color: #000000;">&nbsp; &nbsp; &nbsp; Your account is now active. Login with the following credentials to get started:</p>
-        <p style="color: #000000;">Username: ${account.email}<br> Password: ${account.password}</p>
-        <p style="color: #000000;">After logging in, please create a new password. If you need any assistance, feel free to contact us at 000-000-0000.</p>
+                    <p style="color: #000000;">&nbsp; &nbsp; &nbsp; You have request to reset password. Click button below to reset password</p>
         <p style="color: #000000;">Thank you!<br>
             Best regards, Admin <br></p>
         </div>
-            <a href="${envConfig.frontendLogin}" style="font-size: 16px; border: 1px; background-color: #3C5148; color: #ffffff; border-radius: 8px; padding: 12px; width: 100%; margin: 54px 0 16px 0; text-decoration: none; display: block; text-align: center;">Log in</a>
+            <a href="${envConfig.frontendReset}?token=${token}" style="font-size: 16px; border: 1px; background-color: #3C5148; color: #ffffff; border-radius: 8px; padding: 12px; width: 100%; margin: 54px 0 16px 0; text-decoration: none; display: block; text-align: center;">Log in</a>
         </div>
             
         </body>
@@ -41,4 +41,4 @@ const accountVerificationFormat= ({account}: AccountVerificationFormat)=>{
     }
 }
 
-export default accountVerificationFormat
+export default resetPasswordEmailFormat

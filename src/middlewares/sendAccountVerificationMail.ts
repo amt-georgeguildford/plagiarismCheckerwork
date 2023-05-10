@@ -5,15 +5,15 @@ import transport from "../config/emailConfig"
 const sendAccountVerificationMail= async (req:Request, res:Response)=>{
     try {
   
-      const emailFormat= accountVerificationFormat({token: req.accountVerificationSession, account: req.account})
+      const emailFormat= accountVerificationFormat({account: req.account})
       const mail= await transport.sendMail({...emailFormat})
       if(mail.rejected.length!=0){
-        return res.status(400).send("Invalid Email address")
+        return res.status(400).json({error: "error",message: "Invalid Email address"})
       }
-      res.status(200).send('success')
+      res.status(200).json({error: "ok",message: 'success'})
     } catch (error) {
       console.log(error)
-      res.send("Network Error")
+      res.status(500).json({error:"error", message:"Something went wrong"})
     }
 }
 

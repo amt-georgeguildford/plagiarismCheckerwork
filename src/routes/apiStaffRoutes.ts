@@ -3,10 +3,11 @@ import {
   duplicateAccountFound,
   searchAccount,
 } from "../middlewares/searchAccount";
-import hashPassword from "../middlewares/hashPassword";
 import createNewStudent from "../controllers/createNewStudent";
 import sendAccountVerificationMail from "../middlewares/sendAccountVerificationMail";
 import { loginBodyError, newAccountWithoutQualification } from "../middlewares/loginValidation";
+import { generatePassword } from "../middlewares/hashPassword";
+import { accountSessionToken } from "../middlewares/tokenGenerator";
 
 const apiStaffRouter = express.Router();
 
@@ -16,8 +17,9 @@ apiStaffRouter.post(
   loginBodyError,
   searchAccount,
   duplicateAccountFound,
-  hashPassword,
+  generatePassword,
   createNewStudent,
+  accountSessionToken,
   sendAccountVerificationMail
 );
 

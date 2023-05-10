@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import envConfig from "../config/envConfig";
-import generatePassword from "../utilis/passwordGenerator";
-const hashPassword= async (req:Request, res:Response, next:NextFunction)=>{
+import passwordGenerator from "../utilis/passwordGenerator";
+const generatePassword= async (req:Request, res:Response, next:NextFunction)=>{
     try {
-        const temporalPassword= generatePassword()
+        const temporalPassword= passwordGenerator()
         console.log(temporalPassword)
         console.log(envConfig.salt)
         const password= await bcrypt.hash(temporalPassword,Number(envConfig.salt)) 
@@ -14,8 +14,23 @@ const hashPassword= async (req:Request, res:Response, next:NextFunction)=>{
         next()
     } catch (error) {
         console.log(error)
-        res.send('error')
+        res.status(500).json({error: "error", message: "Something went wrong"})
     }
 }
 
-export default hashPassword
+const hashResetPassword= async (req:Request, res:Response,next:NextFunction)=>{
+    const {password}= req.body
+    try {
+        const hashNewPassword= await bcrypt.hash(password,Number(envConfig.salt))
+        req.hashPassword=hashNewPassword
+        console.log('hash')
+        next()
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "error", message: "Something went wrong"})
+    }
+}
+
+
+
+export {generatePassword,hashResetPassword}

@@ -5,20 +5,28 @@ import authRouter from "./routes/authRoute";
 import apiStaffRouter from "./routes/apiStaffRoutes";
 import generatePassword from "./utilis/passwordGenerator";
 import { saveAdminData } from "./controllers/auth";
-import dotenv from 'dotenv'
-dotenv.config()
+import envConfig from "./config/envConfig";
+import idGenerator from "./utilis/idGenerator";
+import cors from 'cors'
+import morgan from 'morgan'
+import getDepartmentList from "./controllers/getDepartmentList";
+// import fileUpload, {UploadedFile} from 'express-fileupload';
+
 const app = express();
 
-const PORT = process.env.PORT || 3000
+const {PORT}= envConfig
 app.use(express.json());
 app.use(cookieParser())
+app.use(morgan("dev"))
+app.use(cors())
+
+
 app.use('/auth', authRouter)
 app.use('/api/v1/admin', apiAdminRouter)
 app.use('/api/v1/staff', apiStaffRouter)
-app.get('/', (req: Request,res:Response)=>{
-  res.send('live')
+
+app.get('/departments', getDepartmentList)
+
+app.listen(PORT, () => {
+  console.log(`Server is running on PORT: 5000`);
 })
-app.get("/admin", saveAdminData)
-app.listen(PORT,() => {
-  console.log("Server is running on PORT: 5000");
-});

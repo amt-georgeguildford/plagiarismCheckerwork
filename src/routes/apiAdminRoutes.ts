@@ -1,10 +1,11 @@
 import express from "express";
 import createNewLecturerAccount from "../controllers/createNewLecturer";
-import hashPassword from "../middlewares/hashPassword";
-import { accountSessionToken } from "../middlewares/tokenGenerator";
+import {  accountSessionToken } from "../middlewares/tokenGenerator";
 import { duplicateAccountFound, searchAccount } from "../middlewares/searchAccount";
 import sendAccountVerificationMail from "../middlewares/sendAccountVerificationMail";
 import { createNewAccountValidator, loginBodyError} from "../middlewares/loginValidation";
+import { generatePassword } from "../middlewares/hashPassword";
+import { databaseNumber } from "../controllers/adminDashboard";
 
 
 const apiAdminRouter = express.Router();
@@ -15,11 +16,12 @@ apiAdminRouter.post(
   loginBodyError,
   searchAccount,
   duplicateAccountFound,
-  hashPassword,
+  generatePassword,
   createNewLecturerAccount,
   accountSessionToken,
   sendAccountVerificationMail
 );
 
+apiAdminRouter.get('/stats', databaseNumber)
 
 export default apiAdminRouter;

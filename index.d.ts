@@ -11,9 +11,16 @@ declare global{
             payload: {
                 id: string,
                 email: string,
-                role: 'ADMIN' | 'STAFF' | 'STUDENT'
+                role: 'ADMIN' | 'LECTURER' | 'STUDENT'
             },
-
+            csvData: {
+                firstname: string, 
+                lastname: string, 
+                email: string,
+                phone_number: string,
+                departmentid?: string,
+                qualification?: string, 
+            }[],
             accessToken: string,
             refreshToken: string,
             accountVerificationSession: string

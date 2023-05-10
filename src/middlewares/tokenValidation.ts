@@ -7,7 +7,11 @@ const requestHeaderValidation = async (
   res: Response,
   next: NextFunction
 ) => {
+  // const {token} = req.params
+  // console.log('start')
+  // console.log(10,req.headers)
   const { authorization } = req.headers;
+  console.log(12, authorization)
   if (!authorization) {
     return res.status(403).json({ status: "error", message: "Authorize" });
   }
@@ -17,10 +21,18 @@ const requestHeaderValidation = async (
     return res.status(403).json({ status: "error", message: "Authorize" });
   }
 
-  if (authorizationContent[0] !== "session") {
+  if (authorizationContent[0] !== "Bearer") {
     return res.status(403).json({ status: "error", message: "Authorize" });
   }
   req.accessToken = authorizationContent[1];
+  // if(!token){
+  //   console.log('not')
+  //   return res.status(403).json({ status: "error", message: "Authorize" });
+  // }
+  // console.log(30, token)
+  // req.accessToken= token
+  console.log(32, req.accessToken)
+  console.log('next')
   next();
 };
 
@@ -30,6 +42,7 @@ const accessTokenValidation = async (
   next: NextFunction
 ) => {
   const accessToken = req.accessToken;
+  console.log(accessToken)
   try {
     const validateAccessToken = <jwt.JwtPayload>(
       await jwt.verify(accessToken, envConfig.accessTokenSecret)
@@ -41,6 +54,8 @@ const accessTokenValidation = async (
       email: validateAccessToken.email,
       role: validateAccessToken.role
     };
+    req.accessTokenExpired = false;
+    console.log('here')
     next();
   } catch (error) {
     console.log(error);
@@ -56,7 +71,7 @@ const refreshTokenValidation = async (
 ) => {
   const { refreshToken } = req.cookies;
   try {
-    if (req.accessTokenExpired) {
+    if (!req.accessTokenExpired) {
       return next();
     }
 
@@ -83,32 +98,31 @@ const refreshTokenValidation = async (
   }
 };
 
-const mailValidationToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { id } = req.params;
-  try {
-    const validateMailToken = <jwt.JwtPayload>(
-      await jwt.verify(id, envConfig.accountVerificationSesssionSecret)
-    );
-    req.payload = {
-      ...req.payload,
-      id: validateMailToken.id,
-      email: validateMailToken.email,
-      role: validateMailToken.role
-    };
-    req.mailSessionExpired=false
-      next();
-  } catch (error) {
-    console.log(error);
-    res.status(403).json({status: "error", message: "Auhtorize"})
-  }
-};
+// const mailValidationToken = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { id } = req.params;
+//   try {
+//     const validateMailToken = <jwt.JwtPayload>(
+//       await jwt.verify(id, envConfig.accountVerificationSesssionSec)
+//     );
+//     req.payload = {
+//       ...req.payload,
+//       id: validateMailToken.id,
+//       email: validateMailToken.email,
+//       role: validateMailToken.role
+//     };
+//     req.mailSessionExpired=false
+//       next();
+//   } catch (error) {
+//     console.log(error);
+//     res.status(403).json({status: "error", message: "Auhtorize"})
+//   }
+// };
 export {
   requestHeaderValidation,
   accessTokenValidation,
   refreshTokenValidation,
-  mailValidationToken
 };

@@ -3,13 +3,15 @@ import prismaClient from "../model/prismaConfig";
 import idGenerator from "../utilis/idGenerator";
 import transport from "../config/emailConfig";
 import accountVerificationFormat from "../utilis/accountVerificationFormat";
+import { Role } from "../utilis/types";
+
 
 const createNewLecturerAccount = async (req: Request, res: Response, next:NextFunction) => {
   const { firstname, lastname, email, phone_number, qualification,department} = req.body;
   try {
     const id = idGenerator(department, "lecturer");
     const password=req.hashPassword
-    const registerLecture = await prismaClient.users.create({
+    const registerLecture = await prismaClient.user.create({
       data:{
         id,
         email,
@@ -17,12 +19,13 @@ const createNewLecturerAccount = async (req: Request, res: Response, next:NextFu
         lastname,
         phone_number,
         password,
-        departmentid: department,
-        role: 'STAFF',
+        reset_password: true,
+        department_id: department,
+        role: Role.LECTURER,
         qualification: qualification
       }
     });
-    
+     
 
     req.account={...req.account,
       id, email, firstname,lastname

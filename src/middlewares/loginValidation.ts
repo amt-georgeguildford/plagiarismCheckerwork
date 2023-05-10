@@ -2,77 +2,174 @@ import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 
 const loginBodyValidator = () => [
-    body('email')
+  body("email")
     .exists()
+    .trim()
     .escape()
     .isString()
-    .notEmpty().withMessage('Email cannot be empty').bail()
-    .isEmail().withMessage('enter a valid email'),
+    .notEmpty()
+    .withMessage("Username must be user email or id")
+    .bail(),
 
-    body('password')
-    .exists().withMessage(' provide password')
+  body("password")
+    .exists()
+    .withMessage("provide password")
+    .trim()
     .isString()
-    .notEmpty().withMessage('enter password').bail()
+    .notEmpty()
+    .withMessage("enter password")
+    .bail()
     .isStrongPassword({
-        minLength: 8,
-        minUppercase: 1,
-        minLowercase:1,
-        minNumbers:1,
-        minSymbols: 1
-    }).withMessage('Please provide strong password')
-    
+      minLength: 8,
+      minUppercase: 1,
+      minLowercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    }).withMessage(
+        "Password must be 8 to 50 character long with Uppercase, lowerCase, number and symbol"
+      )
+    .isLength({ max: 100 })
+    .withMessage(
+      "Password must be 8 to 50 character long with Uppercase, lowerCase, number and symbol"
+    )
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%?^=+*_|-]).{8,100}$/).withMessage('Password accept (!,#,$,%,^,*,+,-,_,=,?,@,|) as special characters'),
 ];
 
-const createNewAccountValidator= ()=>[
-    body('firstname')
+const createNewAccountValidator = () => [
+    ...emailValidation,
+  body("firstname")
     .exists()
-    .escape()
-    .isString().withMessage('Enter firstname').bail()
-    .notEmpty().withMessage('firstname cannot be empty'),
-
-    body('lastname')
-    .exists()
-    .escape()
-    .isString().withMessage('Enter lastname').bail()
-    .notEmpty().withMessage('lastname cannot be empty'),
-
-    body('phone_number')
-    .exists()
-    .escape()
-    .isString().withMessage('Enter phone number').bail()
-    .notEmpty().withMessage('phone number cannot be empty'),
-
-
-    body('department')
-    .exists()
+    .trim()
     .escape()
     .isString()
-    .notEmpty().withMessage('select department'),
+    .withMessage("Enter firstname")
+    .bail()
+    .notEmpty()
+    .withMessage("firstname cannot be empty")
+    .isLength({ max: 50 })
+    ,
 
-    body('email')
+  body("lastname")
     .exists()
+    .trim()
     .escape()
     .isString()
-    .notEmpty().withMessage('Email cannot be empty').bail()
-    .isEmail().withMessage('enter a valid email'),
+    .withMessage("Enter lastname")
+    .bail()
+    .notEmpty()
+    .withMessage("lastname cannot be empty")
+    .isLength({ max: 50 }),
 
-    body('qualification')
+  body("phone_number")
     .exists()
+    .trim()
     .escape()
-    .isString().withMessage('Enter lecturers qualification').bail()
-    .notEmpty().withMessage('lecturers qualification cannot be empty'),
+    .isString()
+    .withMessage("Enter phone number")
+    .bail()
+    .notEmpty()
+    .withMessage("phone number cannot be empty")
+    .isLength({ max: 15 }),
 
-]
+  body("department")
+    .exists()
+    .trim()
+    .escape()
+    .isString()
+    .notEmpty()
+    .withMessage("select department"),
 
-const newAccountWithoutQualification= ()=>createNewAccountValidator().slice(0,5)
 
-const loginBodyError= (req:Request, res:Response, next:NextFunction)=>{
-    const errorResult= validationResult(req)
-    if(!errorResult.isEmpty()){
-        const errorMessage= errorResult.array().map((errorItem)=>errorItem.msg)
-        return res.status(400).send(errorMessage)
+  body("qualification")
+    .exists()
+    .trim()
+    .escape()
+    .isString()
+    .withMessage("Enter lecturers qualification")
+    .bail()
+    .notEmpty()
+    .withMessage("lecturers qualification cannot be empty"),
+];
+
+const newAccountWithoutQualification = () =>
+  createNewAccountValidator().slice(0, 5);
+
+const loginBodyError = async (req: Request, res: Response, next: NextFunction) => {
+  const errorResult = validationResult(req);
+  if (!errorResult.isEmpty()) {
+    console.log(req.body);
+    return res.status(400).json({ status: "error", message: errorResult.array() });
+  }
+  next();
+};
+
+const resetBodyError= (req:Request, res:Response, next:NextFunction)=>{
+    const errorResult = validationResult(req);
+    const {password, confirmPassword}= req.body
+    if(password==confirmPassword){
     }
-    next()
+  if (!errorResult.isEmpty()) {
+    return res.status(400).json({ status: "error", message: errorResult.array() });
+  }
+  if(password!==confirmPassword){
+    return res.status(400).json({status: "error", message: [
+        {
+            "type": "field",
+            "value": "",
+            "msg": "Password must match with the confirm Password",
+            "path": "confirmPassword",
+            "location": "body"
+        }
+    ]})
+  }
+  next();
 }
 
-export {loginBodyError, loginBodyValidator, createNewAccountValidator, newAccountWithoutQualification}
+const passwordValidation = (requestField: string) => [
+  body(requestField)
+    .exists()
+    .withMessage("provide password")
+    .trim()
+    .isString()
+    .notEmpty()
+    .withMessage("enter password")
+    .bail()
+    .isStrongPassword({
+      minLength: 8,
+      minUppercase: 1,
+      minLowercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    })
+    .isLength({ max: 100 })
+    .withMessage(
+      "Password must be 8 to 50 character long with Uppercase, lowerCase, number and symbol"
+    )
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%?^=+*_|-]).{8,100}$/).withMessage('Password accept (!,#,$,%,^,*,+,-,_,=,?,@,|) as special characters'),
+];
+
+const emailValidation=[
+    body("email")
+    .exists()
+    .trim()
+    .escape()
+    .isString()
+    .notEmpty()
+    .withMessage("Email cannot be empty")
+    .bail()
+    .isEmail()
+    .withMessage("enter a valid email"),
+]
+const resetPasswordValidation = [
+  ...passwordValidation("password"),
+  ...passwordValidation("confirmPassword"),
+];
+export {
+  loginBodyError,
+  loginBodyValidator,
+  createNewAccountValidator,
+  newAccountWithoutQualification,
+  resetPasswordValidation,
+  resetBodyError,
+  emailValidation
+};

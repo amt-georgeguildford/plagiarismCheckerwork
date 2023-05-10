@@ -18,7 +18,7 @@ const generateAccessToken = async (
     next();
   } catch (error) {
     console.log(error);
-    res.send("error");
+    res.status(500).json({error:"error", message:"Something went wrong"});
   }
 };
 
@@ -37,7 +37,7 @@ const generateRefreshToken = async (
     next();
   } catch (error) {
     console.log(error);
-    res.send("error");
+    res.status(500).json({error:"error", message:"Something went wrong"});
   }
 };
 
@@ -49,7 +49,7 @@ const accountSessionToken = async (
   try {
     const accountVerficationSession = await jwt.sign(
       req.payload,
-      envConfig.accountVerificationSesssionSecret,
+      envConfig.accessTokenSecret,
       {
         expiresIn: envConfig.accountVerificationSessionDuration
       }
@@ -58,7 +58,7 @@ const accountSessionToken = async (
     next()
   } catch (error) {
     console.log(error);
-    res.send("error");
+    res.status(500).json({error:"error", message:"Something went wrong"});
   }
 };
-export { generateAccessToken, generateRefreshToken, accountSessionToken };
+export { generateAccessToken, generateRefreshToken,accountSessionToken };
