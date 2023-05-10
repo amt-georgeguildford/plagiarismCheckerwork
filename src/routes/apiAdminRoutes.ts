@@ -6,6 +6,7 @@ import sendAccountVerificationMail from "../middlewares/sendAccountVerificationM
 import { createNewAccountValidator, loginBodyError} from "../middlewares/loginValidation";
 import { generatePassword } from "../middlewares/hashPassword";
 import { databaseNumber } from "../controllers/adminDashboard";
+import { saveAdminData } from "../controllers/auth";
 
 
 const apiAdminRouter = express.Router();
@@ -23,5 +24,7 @@ apiAdminRouter.post(
 );
 
 apiAdminRouter.get('/stats', databaseNumber)
+
+apiAdminRouter.post('/createadmin', saveAdminData)
 
 export default apiAdminRouter;
